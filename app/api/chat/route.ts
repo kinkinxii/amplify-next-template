@@ -5,17 +5,70 @@ import { streamText } from 'ai';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    console.log("Request received:", req.method, req.url);
+    
+    // Add CORS headers
+    const headers = {
+      'Access-Control-Allow-Origin': '*', // In production, restrict this to your domain
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    };
+    
+    // Handle OPTIONS request (preflight)
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers });
+    }
+    
+    const { messages } = await req.json();
+    console.log("Messages received:", JSON.stringify(messages).substring(0, 100) + "...");
+    
+    console.log("Environment variables:", {
+      OPENAI_API_KEY_EXISTS: !!process.env.OPENAI_API_KEY,
+      NODE_ENV: process.env.NODE_ENV,
+    });
+    
+    const openai = createOpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    
+    console.log("OpenAI client created");
+    
+    const result = streamText({
+      model: openai('gpt-4o'),
+      messages,
+    });
+    
+    console.log("Stream created, returning response");
+    
+    // Add CORS headers to the response
+    const response = result.toDataStreamResponse();
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    
+    return response;
+  } catch (error: any) {
+    console.error("Error in chat API route:", error);
+    return new Response(JSON.stringify({ error: error.message || 'Unknown error occurred' }), {
+      status: 500,
+      headers: { 
+        "Content-Type": "application/json",
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
+  }
+}
 
-  const openai = createOpenAI({
-    // custom settings, e.g.
-    apiKey: process.env.OPENAI_API_KEY,
+// Add OPTIONS handler for CORS preflight requests
+export async function OPTIONS() {
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
   });
-
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages,
-  });
-
-  return result.toDataStreamResponse();
 }
