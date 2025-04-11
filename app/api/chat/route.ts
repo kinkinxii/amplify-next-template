@@ -13,6 +13,7 @@ export async function POST(req: Request) {
       'Access-Control-Allow-Origin': '*', // In production, restrict this to your domain
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
+      'Content-Type': 'application/json',
     };
     
     // Handle OPTIONS request (preflight)
@@ -28,29 +29,58 @@ export async function POST(req: Request) {
       NODE_ENV: process.env.NODE_ENV,
     });
     
-    const openai = createOpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    
-    console.log("OpenAI client created");
-    
-    const result = streamText({
-      model: openai('gpt-4o'),
-      messages,
-    });
-    
-    console.log("Stream created, returning response");
-    
-    // Add CORS headers to the response
-    const response = result.toDataStreamResponse();
-    Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value);
-    });
-    
-    return response;
+    try {
+      // First try a non-streaming response to see if that works
+      return new Response(
+        JSON.stringify({
+          message: "This is a fallback non-streaming response from the chat API",
+          receivedMessages: messages.length,
+          timestamp: new Date().toISOString(),
+        }),
+        {
+          status: 200,
+          headers,
+        }
+      );
+      
+      /* Commenting out the streaming code for now to test if non-streaming works
+      const openai = createOpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      
+      console.log("OpenAI client created");
+      
+      const result = streamText({
+        model: openai('gpt-4o'),
+        messages,
+      });
+      
+      console.log("Stream created, returning response");
+      
+      // Add CORS headers to the response
+      const response = result.toDataStreamResponse();
+      Object.entries(headers).forEach(([key, value]) => {
+        response.headers.set(key, value);
+      });
+      
+      return response;
+      */
+    } catch (streamError: any) {
+      console.error("Error in streaming:", streamError);
+      return new Response(JSON.stringify({ 
+        error: "Streaming error: " + (streamError.message || 'Unknown streaming error'),
+        stack: streamError.stack
+      }), {
+        status: 500,
+        headers,
+      });
+    }
   } catch (error: any) {
     console.error("Error in chat API route:", error);
-    return new Response(JSON.stringify({ error: error.message || 'Unknown error occurred' }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Unknown error occurred',
+      stack: error.stack
+    }), {
       status: 500,
       headers: { 
         "Content-Type": "application/json",

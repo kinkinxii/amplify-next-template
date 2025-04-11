@@ -70,9 +70,10 @@ export default function TestApiPage() {
           onChange={(e) => setSelectedApi(e.target.value)}
           className="border p-2 rounded w-full"
         >
-          <option value="/api/chat">/api/chat (Streaming)</option>
+          <option value="/api/chat">/api/chat (Modified to Non-streaming)</option>
+          <option value="/api/chat-stream-test">/api/chat-stream-test (Streaming with Detailed Errors)</option>
           <option value="/api/chat-simple">/api/chat-simple (Non-streaming)</option>
-          <option value="/api/hello">/api/hello (Simple GET)</option>
+          <option value="/api/hello">/api/hello (Simple GET/POST)</option>
         </select>
       </div>
       
