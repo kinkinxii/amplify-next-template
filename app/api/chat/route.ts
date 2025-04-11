@@ -29,21 +29,10 @@ export async function POST(req: Request) {
       NODE_ENV: process.env.NODE_ENV,
     });
     
+    // Try streaming first, but catch any errors and fall back to non-streaming
     try {
-      // First try a non-streaming response to see if that works
-      return new Response(
-        JSON.stringify({
-          message: "This is a fallback non-streaming response from the chat API",
-          receivedMessages: messages.length,
-          timestamp: new Date().toISOString(),
-        }),
-        {
-          status: 200,
-          headers,
-        }
-      );
+      console.log("Attempting to use streaming...");
       
-      /* Commenting out the streaming code for now to test if non-streaming works
       const openai = createOpenAI({
         apiKey: process.env.OPENAI_API_KEY,
       });
@@ -64,16 +53,22 @@ export async function POST(req: Request) {
       });
       
       return response;
-      */
     } catch (streamError: any) {
-      console.error("Error in streaming:", streamError);
-      return new Response(JSON.stringify({ 
-        error: "Streaming error: " + (streamError.message || 'Unknown streaming error'),
-        stack: streamError.stack
-      }), {
-        status: 500,
-        headers,
-      });
+      // If streaming fails, log the error and fall back to non-streaming
+      console.error("Streaming failed, falling back to non-streaming:", streamError);
+      
+      return new Response(
+        JSON.stringify({
+          message: "This is a fallback non-streaming response from the chat API",
+          receivedMessages: messages.length,
+          timestamp: new Date().toISOString(),
+          streamingError: streamError.message || 'Unknown streaming error',
+        }),
+        {
+          status: 200,
+          headers,
+        }
+      );
     }
   } catch (error: any) {
     console.error("Error in chat API route:", error);

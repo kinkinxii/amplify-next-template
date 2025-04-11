@@ -48,6 +48,21 @@ export async function POST(req: Request) {
         
         try {
           console.log("Converting to data stream response...");
+          
+          // Instead of using streaming, return a JSON response for testing
+          return new Response(
+            JSON.stringify({
+              message: "Test response from chat-stream-test",
+              phase: "response creation successful",
+              timestamp: new Date().toISOString()
+            }),
+            {
+              status: 200,
+              headers,
+            }
+          );
+          
+          /* Commenting out streaming code that's causing issues
           const response = result.toDataStreamResponse();
           console.log("Response created successfully");
           
@@ -57,6 +72,7 @@ export async function POST(req: Request) {
           });
           
           return response;
+          */
         } catch (responseError: any) {
           console.error("Error creating response:", responseError);
           return new Response(JSON.stringify({ 

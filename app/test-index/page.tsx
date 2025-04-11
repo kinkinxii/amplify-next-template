@@ -39,7 +39,7 @@ export default function TestIndexPage() {
           <li>
             <strong>/api/chat</strong>
             <p className="text-gray-600">
-              Modified to return a non-streaming response for testing. Originally used streaming.
+              Attempts to use streaming but falls back to non-streaming if there's an error. Captures streaming error details.
             </p>
           </li>
           <li>
@@ -49,9 +49,15 @@ export default function TestIndexPage() {
             </p>
           </li>
           <li>
+            <strong>/api/chat-openai-nonstream</strong>
+            <p className="text-gray-600">
+              Uses the OpenAI API through the AI SDK but in non-streaming mode. Tests if the issue is with streaming or with the OpenAI API integration.
+            </p>
+          </li>
+          <li>
             <strong>/api/chat-simple</strong>
             <p className="text-gray-600">
-              Non-streaming endpoint that returns a simple JSON response.
+              Simple endpoint that returns a JSON response without using the AI SDK at all.
             </p>
           </li>
           <li>
