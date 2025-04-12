@@ -46,7 +46,7 @@ export async function GET(req: Request) {
           envVars[key] = process.env[key] as string;
         }
       } else {
-        envVars[key] = secret("OPENAI_API_KEY").toString();
+        envVars[key] = secret("OPENAI_API_KEY").resolve.toString();
       }
     }
     

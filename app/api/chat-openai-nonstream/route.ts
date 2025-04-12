@@ -5,6 +5,8 @@ import { secret } from '@aws-amplify/backend';
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
 export async function POST(req: Request) {
   try {
     console.log("OpenAI non-streaming API request received:", req.method, req.url);
@@ -26,15 +28,16 @@ export async function POST(req: Request) {
     console.log("Messages received in OpenAI non-streaming API:", JSON.stringify(messages).substring(0, 100) + "...");
     
     console.log("Environment variables:", {
-      OPENAI_API_KEY_EXISTS: !!process.env.OPENAI_API_KEY,
+      OPENAI_API_KEY_EXISTS: !!OPENAI_API_KEY,
       NODE_ENV: process.env.NODE_ENV,
     });
     
     try {
       // Create OpenAI client
-      console.log("Creating OpenAI client...");
+      secret("OPENAI_API_KEY");
+      console.log("Creating OpenAI client...", OPENAI_API_KEY);
       const openai = createOpenAI({
-        apiKey: secret("OPENAI_API_KEY").toString(),
+        apiKey: OPENAI_API_KEY,
       });
       console.log("OpenAI client created successfully");
       
