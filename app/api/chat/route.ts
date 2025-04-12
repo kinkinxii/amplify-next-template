@@ -5,7 +5,6 @@ import {
   GetSecretValueCommand,
 } from "@aws-sdk/client-secrets-manager";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -35,7 +34,7 @@ export async function POST(req: Request) {
 
   const parsedSecret = secret ? JSON.parse(secret) : {};
   const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
-  
+
   const { messages } = await req.json();
 
   const openai = createOpenAI({

@@ -32,8 +32,9 @@ export async function POST(req: Request) {
 
   const secret = response.SecretString;
 
-  const parsedSecret = secret ? JSON.parse(secret) : {};
-  const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
+  // const parsedSecret = secret ? JSON.parse(secret) : {};
+  // const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
+  const OPENAI_API_KEY = secret;
 
   try {
     console.log("OpenAI non-streaming API request received:", req.method, req.url);
