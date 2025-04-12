@@ -1,10 +1,13 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
-import 'dotenv/config'
+// import 'dotenv/config'
 import {
   SecretsManagerClient,
   GetSecretValueCommand,
 } from "@aws-sdk/client-secrets-manager";
+
+export const runtime = 'nodejs'; 
+
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
 
