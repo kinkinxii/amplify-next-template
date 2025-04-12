@@ -8,9 +8,17 @@ export const maxDuration = 30;
 // Function to get secret from AWS Secrets Manager
 async function getSecret(secretName: string): Promise<string> {
   try {
-    // Create a Secrets Manager client
+    // Create a Secrets Manager client with explicit credentials configuration
     const client = new SecretsManagerClient({
       region: process.env.AWS_REGION || 'us-east-1', // Use the region from environment variable or default to us-east-1
+      // In a production environment, you would rely on the Lambda function's IAM role
+      // For local development, you might need to provide credentials explicitly
+      credentials: process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+        ? {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          }
+        : undefined,
     });
     
     // Create the GetSecretValueCommand
@@ -27,8 +35,17 @@ async function getSecret(secretName: string): Promise<string> {
     } else {
       throw new Error('Secret value is not a string');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error retrieving secret:', error);
+    
+    // Provide more detailed error information for credential issues
+    if (error.name === 'CredentialsProviderError') {
+      throw new Error(
+        'AWS credentials not found. When deployed to Amplify, ensure the Lambda function has an IAM role with secretsmanager:GetSecretValue permissions. ' +
+        'For local development, set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.'
+      );
+    }
+    
     throw error;
   }
 }

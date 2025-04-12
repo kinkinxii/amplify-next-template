@@ -1,5 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
+import { secret } from '@aws-amplify/backend';
 
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
       // Create OpenAI client
       console.log("Creating OpenAI client...");
       const openai = createOpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: secret("OPENAI_API_KEY").toString(),
       });
       console.log("OpenAI client created successfully");
       

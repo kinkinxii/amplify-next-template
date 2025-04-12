@@ -1,5 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import { secret } from '@aws-amplify/backend';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
       console.log("Attempting to use streaming...");
       
       const openai = createOpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey: secret("OPENAI_API_KEY").toString(), // Resolve secret to string
       });
       
       console.log("OpenAI client created");
