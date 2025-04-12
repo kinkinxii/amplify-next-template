@@ -1,3 +1,5 @@
+import { secret } from '@aws-amplify/backend';
+
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
 
@@ -44,7 +46,7 @@ export async function GET(req: Request) {
           envVars[key] = process.env[key] as string;
         }
       } else {
-        envVars[key] = '[NOT SET]';
+        envVars[key] = secret("OPENAI_API_KEY").toString();
       }
     }
     
