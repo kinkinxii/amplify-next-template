@@ -1,9 +1,10 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
-import { secret } from '@aws-amplify/backend';
+import 'dotenv/config'
 
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
+
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 

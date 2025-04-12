@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
