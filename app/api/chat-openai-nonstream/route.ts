@@ -9,32 +9,22 @@ import {
 export const maxDuration = 30;
 
 
+const client = new SecretsManagerClient({ region: 'ap-northeast-1' });
+
+async function getSecret(secret_name: string) {
+  const command = new GetSecretValueCommand({ SecretId: secret_name});
+  const response = await client.send(command);
+  return response.SecretString;
+}
+
 export async function POST(req: Request) {
   const secret_name = "openai-api-key";
 
-  const client = new SecretsManagerClient({
-    region: "ap-northeast-1", // Change to your region
-  });
+  const secret = await getSecret(secret_name);
 
-  let response;
+  const parsedSecret = secret ? JSON.parse(secret) : {};
+  const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
 
-  try {
-    response = await client.send(
-      new GetSecretValueCommand({
-        SecretId: secret_name,
-      })
-    );
-  } catch (error) {
-    // For a list of exceptions thrown, see
-    // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-    throw error;
-  }
-
-  const secret = response.SecretString;
-
-  // const parsedSecret = secret ? JSON.parse(secret) : {};
-  // const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
-  const OPENAI_API_KEY = secret;
 
   try {
     console.log("OpenAI non-streaming API request received:", req.method, req.url);
