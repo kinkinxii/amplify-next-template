@@ -21,15 +21,13 @@ async function getSecret(secret_name: string) {
 }
 
 export async function POST(req: Request) {
-  const secret_name = "openai-api-key";
-
-  const secret = await getSecret(secret_name);
-
-  const parsedSecret = secret ? JSON.parse(secret) : {};
-  const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
-
-
   try {
+    const secret_name = "openai-api-key";
+
+    const secret = await getSecret(secret_name);
+
+    const parsedSecret = secret ? JSON.parse(secret) : {};
+    const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
     // const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     console.log("OpenAI non-streaming API request received:", req.method, req.url);
     
