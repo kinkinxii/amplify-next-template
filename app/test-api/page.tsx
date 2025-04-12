@@ -78,6 +78,8 @@ export default function TestApiPage() {
           <option value="/api/chat">/api/chat (Streaming with Fallback)</option>
           <option value="/api/chat-stream-test">/api/chat-stream-test (Streaming with Detailed Errors)</option>
           <option value="/api/chat-openai-nonstream">/api/chat-openai-nonstream (OpenAI Non-streaming)</option>
+          <option value="/api/chat-with-secrets">/api/chat-with-secrets (Using Hardcoded API Key)</option>
+          <option value="/api/chat-with-secrets-manager">/api/chat-with-secrets-manager (Using AWS Secrets Manager)</option>
           <option value="/api/chat-simple">/api/chat-simple (Simple JSON Response)</option>
           <option value="/api/hello">/api/hello (Simple GET/POST)</option>
           <option value="/api/env-test">/api/env-test (Environment Variables Test)</option>
