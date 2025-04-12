@@ -66,20 +66,36 @@ export default function TestIndexPage() {
               Simple endpoint that supports both GET and POST requests.
             </p>
           </li>
+          <li>
+            <strong>/api/env-test</strong>
+            <p className="text-gray-600">
+              Diagnostic endpoint that returns information about environment variables and the runtime environment. Useful for debugging environment variable issues.
+            </p>
+          </li>
         </ul>
       </div>
       
       <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-8">
         <h3 className="text-lg font-semibold mb-2">Troubleshooting Notes</h3>
         <p className="mb-2">
-          If you're experiencing 403 errors with the streaming endpoint, try the following:
+          Based on testing, we've identified that the issue is with the OPENAI_API_KEY environment variable not being properly accessed in the Amplify environment.
+        </p>
+        <p className="mb-2">
+          The error message from the OpenAI API is: <code className="bg-yellow-50 px-1 rounded">OpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.</code>
+        </p>
+        <p className="mb-2">
+          To resolve this issue, try the following:
         </p>
         <ul className="list-disc pl-6 space-y-1">
-          <li>Check that the OPENAI_API_KEY environment variable is set correctly in Amplify</li>
-          <li>Test the non-streaming endpoints to see if they work</li>
-          <li>Check CloudWatch logs for detailed error messages</li>
-          <li>Try the /api/chat-stream-test endpoint which provides more detailed error information</li>
+          <li>Use the <strong>/api/env-test</strong> endpoint to check if the OPENAI_API_KEY environment variable is properly set in the Amplify environment</li>
+          <li>Verify that the OPENAI_API_KEY environment variable is set correctly in the Amplify Console (App settings → Environment variables)</li>
+          <li>Try redeploying the application after confirming the environment variable is set</li>
+          <li>Check if there are any restrictions on environment variable access in the Amplify environment</li>
+          <li>Consider using a different approach to store and access the API key, such as AWS Secrets Manager or AWS Systems Manager Parameter Store</li>
         </ul>
+        <p className="mt-2">
+          In the meantime, you can use the <strong>/api/chat-simple</strong> endpoint which doesn't require the OpenAI API key, or the <strong>/chat-simple-test</strong> page which uses this endpoint.
+        </p>
       </div>
     </div>
   );

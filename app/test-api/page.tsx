@@ -14,18 +14,23 @@ export default function TestApiPage() {
     setResponse('');
 
     try {
-      const messages = [
-        { role: 'user', content: 'Hello, this is a test message.' }
-      ];
-
       console.log(`Testing API: ${selectedApi}`);
       
+      // Use GET for env-test endpoint, POST for others
+      const isGetEndpoint = selectedApi === '/api/env-test';
+      
       const response = await fetch(selectedApi, {
-        method: 'POST',
+        method: isGetEndpoint ? 'GET' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messages }),
+        ...(isGetEndpoint ? {} : {
+          body: JSON.stringify({
+            messages: [
+              { role: 'user', content: 'Hello, this is a test message.' }
+            ]
+          }),
+        }),
       });
 
       console.log('Response status:', response.status);
@@ -75,6 +80,7 @@ export default function TestApiPage() {
           <option value="/api/chat-openai-nonstream">/api/chat-openai-nonstream (OpenAI Non-streaming)</option>
           <option value="/api/chat-simple">/api/chat-simple (Simple JSON Response)</option>
           <option value="/api/hello">/api/hello (Simple GET/POST)</option>
+          <option value="/api/env-test">/api/env-test (Environment Variables Test)</option>
         </select>
       </div>
       
