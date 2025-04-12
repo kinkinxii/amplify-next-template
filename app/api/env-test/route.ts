@@ -1,10 +1,37 @@
 import 'dotenv/config'
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function GET(req: Request) {
+  const secret_name = "openai-api-key";
+  
+  const client = new SecretsManagerClient({
+    region: "ap-northeast-1", // Change to your region
+  });
+
+  let response;
+
+  try {
+    response = await client.send(
+      new GetSecretValueCommand({
+        SecretId: secret_name,
+      })
+    );
+  } catch (error) {
+    // For a list of exceptions thrown, see
+    // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+    throw error;
+  }
+
+  const secret = response.SecretString;
+
+  const OPENAI_API_KEY = secret;
   try {
     console.log("Environment test API request received");
     

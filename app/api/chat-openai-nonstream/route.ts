@@ -1,14 +1,39 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import 'dotenv/config'
-
+import {
+  SecretsManagerClient,
+  GetSecretValueCommand,
+} from "@aws-sdk/client-secrets-manager";
 // Allow responses up to 30 seconds
 export const maxDuration = 30;
 
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
 export async function POST(req: Request) {
+  const secret_name = "openai-api-key";
+
+  const client = new SecretsManagerClient({
+    region: "ap-northeast-1", // Change to your region
+  });
+
+  let response;
+
+  try {
+    response = await client.send(
+      new GetSecretValueCommand({
+        SecretId: secret_name,
+      })
+    );
+  } catch (error) {
+    // For a list of exceptions thrown, see
+    // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+    throw error;
+  }
+
+  const secret = response.SecretString;
+
+  const OPENAI_API_KEY = secret;
+
   try {
     console.log("OpenAI non-streaming API request received:", req.method, req.url);
     
