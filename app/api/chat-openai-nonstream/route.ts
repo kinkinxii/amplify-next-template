@@ -34,7 +34,6 @@ export async function POST(req: Request) {
     
     try {
       // Create OpenAI client
-      secret("OPENAI_API_KEY");
       console.log("Creating OpenAI client...", OPENAI_API_KEY);
       const openai = createOpenAI({
         apiKey: OPENAI_API_KEY,
