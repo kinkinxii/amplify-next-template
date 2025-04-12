@@ -17,23 +17,31 @@ async function getSecret(secret_name: string) {
 }
 
 export async function POST(req: Request) {
-  const secret_name = "openai-api-key";
+  try {
+    const secret_name = "openai-api-key";
 
-  const secret = await getSecret(secret_name);
+    const secret = await getSecret(secret_name);
 
-  const parsedSecret = secret ? JSON.parse(secret) : {};
-  const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
+    const parsedSecret = secret ? JSON.parse(secret) : {};
+    const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
 
-  const { messages } = await req.json();
+    const { messages } = await req.json();
 
-  const openai = createOpenAI({
-    apiKey: OPENAI_API_KEY,
-  });
+    const openai = createOpenAI({
+      apiKey: OPENAI_API_KEY,
+    });
 
-  const result = streamText({
-    model: openai('gpt-4o'),
-    messages,
-  });
+    const result = streamText({
+      model: openai('gpt-4o'),
+      messages,
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
+      { status: 500 }
+    );
+  }
+  
 }
