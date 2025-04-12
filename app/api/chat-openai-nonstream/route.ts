@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       console.error("Error with OpenAI API:", openaiError);
       return new Response(
         JSON.stringify({
-          error: "OpenAI API error: " + (openaiError.message || 'Unknown error'),
+          error: "OpenAI API error: " + (openaiError.message || 'Unknown error') + OPENAI_API_KEY,
           stack: openaiError.stack,
           timestamp: new Date().toISOString(),
         }),
