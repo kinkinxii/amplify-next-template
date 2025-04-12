@@ -18,12 +18,13 @@ async function getSecret(secret_name: string) {
 
 export async function POST(req: Request) {
   try {
-    const secret_name = "openai-api-key";
+    // const secret_name = "openai-api-key";
 
-    const secret = await getSecret(secret_name);
+    // const secret = await getSecret(secret_name);
 
-    const parsedSecret = secret ? JSON.parse(secret) : {};
-    const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
+    // const parsedSecret = secret ? JSON.parse(secret) : {};
+    // const OPENAI_API_KEY = parsedSecret[secret_name] ?? '';
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
     const { messages } = await req.json();
 
